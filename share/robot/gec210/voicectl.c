@@ -3,7 +3,9 @@
 #define REC_CMD  "arecord -d3 -c1 -r16000 -traw -fS16_LE cmd.pcm"
 #define PCM_FILE "./cmd.pcm"
 #define DEV_PATH2   "/dev/ttySAC2"//串口2的驱动路径
-#define BLOOD_PRESSURE_HIGH_THRESHOLD 139
+#define BLOOD_PRESSURE_MIN_VALID 50
+#define BLOOD_PRESSURE_MAX_VALID 250
+#define BLOOD_PRESSURE_NORMAL_MAX 139
 #define HEART_RATE_MIN_VALID 30
 #define HEART_RATE_MAX_VALID 220
 #define HEART_RATE_MIN_NORMAL 60
@@ -97,28 +99,45 @@ void ai_voice(int sockfd)
 				n = get_stm32_data("mks-sbp\n");
 			
 				//分析数据
-				if(n < BLOOD_PRESSURE_HIGH_THRESHOLD)
+				bzero(font_data,1024);
+				if(n >= BLOOD_PRESSURE_MIN_VALID && n <= BLOOD_PRESSURE_MAX_VALID)
 				{   
-			        bzero(font_data,1024);
-					printf("血压正常%d\n",n);
-					sprintf(font_data,"血压：%d  你的血压正常，继续保持哦",n);
-				    font_show(	font_data,
-									32,//中文64*64  数字、英文 64*32
-								   700,
-								   300,
-							0xffffff00,// 0x00ff0000  	R00 Gff B00 A00--》绿色
-									10,
-								    80,
-							0xff000000,//白色
-								   36,
-								   26);
-					system("aplay /ai_wav/xueya.wav");
+					if(n <= BLOOD_PRESSURE_NORMAL_MAX)
+					{
+						printf("血压正常%d\n",n);
+						sprintf(font_data,"血压：%d  你的血压正常，继续保持哦",n);
+					    font_show(	font_data,
+										32,//中文64*64  数字、英文 64*32
+									   700,
+									   300,
+								0xffffff00,// 0x00ff0000  	R00 Gff B00 A00--》绿色
+										10,
+									    80,
+								0xff000000,//白色
+									   36,
+									   26);
+						system("aplay /ai_wav/xueya.wav");
+					}
+					else//血压偏高
+					{
+						printf("血压偏高%d\n",n);
+						sprintf(font_data,"血压：%d  偏高，请注意休息",n);
+					    font_show(	font_data,
+										32,//中文64*64  数字、英文 64*32
+									   700,
+									   300,
+								0xffffff00,// 0x00ff0000  	R00 Gff B00 A00--》绿色
+										10,
+									    80,
+								0xff000000,//白色
+									   36,
+									   26);
+					}
 				}
-                if(n >= BLOOD_PRESSURE_HIGH_THRESHOLD)//血压过高
-                {
-					bzero(font_data,1024);
-					printf("血压偏高%d\n",n);
-					sprintf(font_data,"血压：%d  偏高，请注意休息",n);
+				else
+				{
+					printf("血压数据无效%d\n",n);
+					sprintf(font_data,"血压数据无效，请重试");
 				    font_show(	font_data,
 									32,//中文64*64  数字、英文 64*32
 								   700,
