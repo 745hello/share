@@ -1,0 +1,6 @@
+--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I..\CMSIS -I..\DEVICE_LIB\inc -I..\SYSTEM -I..\USER -I..\HARDWARE -I..\HARDWARE\MPU6050
+-I "C:\Users\weilan\Desktop\µ÷ÊÔ°æ - ¸±±¾\USER\RTE"
+-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.17.1
+-I C:\Keil_v5\ARM\CMSIS\Include
+-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER
+-o ..\obj\mpu6050_i2c.o --omf_browse ..\obj\mpu6050_i2c.crf --depend ..\obj\mpu6050_i2c.d "..\HARDWARE\MPU6050\MPU6050_I2C.c"

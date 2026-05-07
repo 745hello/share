@@ -1,0 +1,10 @@
+﻿#BNF+IAT 1.0 UTF-8;
+
+!grammar cmd;
+!slot <cmd>;
+!start <cmdstart>;
+
+<cmdstart>:<cmd>;
+
+<cmd>:我要量血压!id(3)|你好!id(2)|再见!id(999)|你叫什么名字!id(66)|我要测心率!id(6)|我要测体温!id(20);
+
