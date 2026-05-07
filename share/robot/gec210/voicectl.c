@@ -3,6 +3,12 @@
 #define REC_CMD  "arecord -d3 -c1 -r16000 -traw -fS16_LE cmd.pcm"
 #define PCM_FILE "./cmd.pcm"
 #define DEV_PATH2   "/dev/ttySAC2"//串口2的驱动路径
+#define BLOOD_PRESSURE_HIGH_THRESHOLD 139
+#define HEART_RATE_MIN_NORMAL 60
+#define HEART_RATE_MAX_NORMAL 100
+#define TEMP_LOW_MAX 36
+#define TEMP_NORMAL_MAX 37
+#define TEMP_ELEVATED_MAX 38
 
 void showbitmap(bitmap *bm, int x0, int y0);
 void font_show(char *text,int pixelSize,int outFrameWidth,int outFrameHeight,int outFrameColor,int fontPosX,int fontPosY,int fontColor,int frameToLcdPosX,int frameToLcdPosY);
@@ -87,7 +93,7 @@ void ai_voice(int sockfd)
 				n = get_stm32_data("mks-sbp\n");
 			
 				//分析数据
-				if(n < 139)
+				if(n < BLOOD_PRESSURE_HIGH_THRESHOLD)
 				{   
 			        bzero(font_data,1024);
 					printf("血压正常%d\n",n);
@@ -104,7 +110,7 @@ void ai_voice(int sockfd)
 								   26);
 					system("aplay /ai_wav/xueya.wav");
 				}
-                if(n >= 139)//血压过高
+                if(n >= BLOOD_PRESSURE_HIGH_THRESHOLD)//血压过高
                 {
 					bzero(font_data,1024);
 					printf("血压偏高%d\n",n);
@@ -138,7 +144,7 @@ void ai_voice(int sockfd)
 				if(n > 0)
 				{
 					bzero(font_data,1024);
-					if(n >= 60 && n <= 100)
+					if(n >= HEART_RATE_MIN_NORMAL && n <= HEART_RATE_MAX_NORMAL)
 					{
 						printf("心率正常%d\n",n);
 						sprintf(font_data,"心率：%d  心率正常",n);
@@ -177,17 +183,17 @@ void ai_voice(int sockfd)
 				if(n > 0)
 				{
 					bzero(font_data,1024);
-					if(n < 37)
+					if(n <= TEMP_LOW_MAX)
 					{
 						printf("体温偏低%d\n",n);
 						sprintf(font_data,"体温：%d  体温偏低",n);
 					}
-					else if(n <= 37)
+					else if(n <= TEMP_NORMAL_MAX)
 					{
 						printf("体温正常%d\n",n);
 						sprintf(font_data,"体温：%d  体温正常",n);
 					}
-					else if(n <= 38)
+					else if(n <= TEMP_ELEVATED_MAX)
 					{
 						printf("体温偏高%d\n",n);
 						sprintf(font_data,"体温：%d  体温偏高",n);
