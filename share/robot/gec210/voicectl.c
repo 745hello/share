@@ -34,7 +34,7 @@ void ai_voice(int sockfd)
 	int n=0;//获取的数据
 	char font_data[1024] = {0};//屏幕显示文字：传感器数据+ai互动数据 
 	//显示ai界面
-	show_bmp("ai_bmp/voice.bmp",0,0);
+	show_bmp("/ai_bmp/voice.bmp",0,0);
 
 	//检测语音按钮
 	while(1)
@@ -87,7 +87,7 @@ void ai_voice(int sockfd)
 				n = get_stm32_data("mks-sbp\n");
 			
 				//分析数据
-				if(n<139)
+				if(n < 139)
 				{   
 			        bzero(font_data,1024);
 					printf("血压正常%d\n",n);
@@ -104,16 +104,123 @@ void ai_voice(int sockfd)
 								   26);
 					system("aplay /ai_wav/xueya.wav");
 				}
-                if(n >139)//血压过高
+                if(n >= 139)//血压过高
                 {
-					
-					printf("血压%d \n",n);	
+					bzero(font_data,1024);
+					printf("血压偏高%d\n",n);
+					sprintf(font_data,"血压：%d  偏高，请注意休息",n);
+				    font_show(	font_data,
+									32,//中文64*64  数字、英文 64*32
+								   700,
+								   300,
+							0xffffff00,// 0x00ff0000  	R00 Gff B00 A00--》绿色
+									10,
+								    80,
+							0xff000000,//白色
+								   36,
+								   26);
 				}				
 			}
 			if(cmd == 6)//我要测心率
 			{
-				
-				
+				font_show(	"请把手放到传感器,等待一会",
+									32,//中文64*64  数字、英文 64*32
+								   700,
+								   300,
+							0xffffff00,// 0x00ff0000  	R00 Gff B00 A00--》绿色
+									10,
+								    80,
+							0xff000000,//白色
+								   36,
+								   26);
+				system("aplay /ai_wav/dengdai.wav");
+				n = get_stm32_data("mks-hr\n");
+				if(n > 0)
+				{
+					bzero(font_data,1024);
+					if(n >= 60 && n <= 100)
+					{
+						printf("心率正常%d\n",n);
+						sprintf(font_data,"心率：%d  心率正常",n);
+					}
+					else
+					{
+						printf("心率异常%d\n",n);
+						sprintf(font_data,"心率：%d  请注意休息",n);
+					}
+					font_show(	font_data,
+									32,//中文64*64  数字、英文 64*32
+								   700,
+								   300,
+							0xffffff00,// 0x00ff0000  	R00 Gff B00 A00--》绿色
+									10,
+								    80,
+							0xff000000,//白色
+								   36,
+								   26);
+				}
+			}
+			if(cmd == 20)//我要测体温
+			{
+				font_show(	"请把手放到传感器,等待一会",
+									32,//中文64*64  数字、英文 64*32
+								   700,
+								   300,
+							0xffffff00,// 0x00ff0000  	R00 Gff B00 A00--》绿色
+									10,
+								    80,
+							0xff000000,//白色
+								   36,
+								   26);
+				system("aplay /ai_wav/dengdai.wav");
+				n = get_stm32_data("asm\n");
+				if(n > 0)
+				{
+					bzero(font_data,1024);
+					if(n < 37)
+					{
+						printf("体温偏低%d\n",n);
+						sprintf(font_data,"体温：%d  体温偏低",n);
+					}
+					else if(n <= 37)
+					{
+						printf("体温正常%d\n",n);
+						sprintf(font_data,"体温：%d  体温正常",n);
+					}
+					else if(n <= 38)
+					{
+						printf("体温偏高%d\n",n);
+						sprintf(font_data,"体温：%d  体温偏高",n);
+					}
+					else
+					{
+						printf("体温较高%d\n",n);
+						sprintf(font_data,"体温：%d  请注意休息",n);
+					}
+					font_show(	font_data,
+									32,//中文64*64  数字、英文 64*32
+								   700,
+								   300,
+							0xffffff00,// 0x00ff0000  	R00 Gff B00 A00--》绿色
+									10,
+								    80,
+							0xff000000,//白色
+								   36,
+								   26);
+				}
+			}
+			if(cmd == 66)//你叫什么名字
+			{
+				font_show(	"我是语音助手",
+									32,//中文64*64  数字、英文 64*32
+								   700,
+								   300,
+							0xffffff00,// 0x00ff0000  	R00 Gff B00 A00--》绿色
+									10,
+								    80,
+							0xff000000,//白色
+								   36,
+								   26);
 			}
 			
 		}
