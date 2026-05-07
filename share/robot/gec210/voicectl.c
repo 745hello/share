@@ -4,8 +4,12 @@
 #define PCM_FILE "./cmd.pcm"
 #define DEV_PATH2   "/dev/ttySAC2"//串口2的驱动路径
 #define BLOOD_PRESSURE_HIGH_THRESHOLD 139
+#define HEART_RATE_MIN_VALID 30
+#define HEART_RATE_MAX_VALID 220
 #define HEART_RATE_MIN_NORMAL 60
 #define HEART_RATE_MAX_NORMAL 100
+#define TEMP_MIN_VALID 30
+#define TEMP_MAX_VALID 45
 #define TEMP_LOW_MAX 36
 #define TEMP_NORMAL_MAX 37
 #define TEMP_ELEVATED_MAX 38
@@ -141,9 +145,9 @@ void ai_voice(int sockfd)
 								   26);
 				system("aplay /ai_wav/dengdai.wav");
 				n = get_stm32_data("mks-hr\n");
-				if(n > 0)
+				bzero(font_data,1024);
+				if(n >= HEART_RATE_MIN_VALID && n <= HEART_RATE_MAX_VALID)
 				{
-					bzero(font_data,1024);
 					if(n >= HEART_RATE_MIN_NORMAL && n <= HEART_RATE_MAX_NORMAL)
 					{
 						printf("心率正常%d\n",n);
@@ -154,6 +158,21 @@ void ai_voice(int sockfd)
 						printf("心率异常%d\n",n);
 						sprintf(font_data,"心率：%d  请注意休息",n);
 					}
+					font_show(	font_data,
+									32,//中文64*64  数字、英文 64*32
+								   700,
+								   300,
+							0xffffff00,// 0x00ff0000  	R00 Gff B00 A00--》绿色
+									10,
+								    80,
+							0xff000000,//白色
+								   36,
+								   26);
+				}
+				else
+				{
+					printf("心率数据无效%d\n",n);
+					sprintf(font_data,"心率数据无效，请重试");
 					font_show(	font_data,
 									32,//中文64*64  数字、英文 64*32
 								   700,
@@ -180,9 +199,9 @@ void ai_voice(int sockfd)
 								   26);
 				system("aplay /ai_wav/dengdai.wav");
 				n = get_stm32_data("asm\n");
-				if(n > 0)
+				bzero(font_data,1024);
+				if(n >= TEMP_MIN_VALID && n <= TEMP_MAX_VALID)
 				{
-					bzero(font_data,1024);
 					if(n <= TEMP_LOW_MAX)
 					{
 						printf("体温偏低%d\n",n);
@@ -203,6 +222,21 @@ void ai_voice(int sockfd)
 						printf("体温较高%d\n",n);
 						sprintf(font_data,"体温：%d  请注意休息",n);
 					}
+					font_show(	font_data,
+									32,//中文64*64  数字、英文 64*32
+								   700,
+								   300,
+							0xffffff00,// 0x00ff0000  	R00 Gff B00 A00--》绿色
+									10,
+								    80,
+							0xff000000,//白色
+								   36,
+								   26);
+				}
+				else
+				{
+					printf("体温数据无效%d\n",n);
+					sprintf(font_data,"体温数据无效，请重试");
 					font_show(	font_data,
 									32,//中文64*64  数字、英文 64*32
 								   700,
